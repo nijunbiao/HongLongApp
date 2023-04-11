@@ -30,7 +30,6 @@
 	export default {
 		data() {
 			return {
-				// interval: null,
 				isShow: false,
 				terminalList: [],
 				keyLockerList: []
