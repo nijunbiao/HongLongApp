@@ -9,6 +9,7 @@ export default class Request {
 			method = param.method,
 			header = {},
 			data = param.data || {},
+			isShowLoading = param.isShowLoading ?? true,//是否要显示Loading，默认显示
 			hideLoading = false;
 
 		//拼接完整请求地址
@@ -35,7 +36,7 @@ export default class Request {
 		}
 
 		//加载圈
-		if (!hideLoading) {
+		if (isShowLoading && !hideLoading) {
 			hideLoading = true
 			uni.showLoading({
 				title: '加载中...'
@@ -96,7 +97,7 @@ export default class Request {
 				//请求完成
 				complete() {
 					//隐藏加载
-					if (hideLoading) {
+					if (isShowLoading && hideLoading) {
 						hideLoading = false
 						uni.hideLoading({
 							fail: function(res) {

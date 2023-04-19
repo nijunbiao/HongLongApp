@@ -1,11 +1,10 @@
 <template>
 	<view class="content">
-		<image class="logo" src="@/static/HongLongLogo.png" />
+		<image class="logo" src="@/static/HongLongLogo.png" :style="{marginTop: logoMarginTop}" />
 		<view class="example">
 			<uni-forms ref="customForm" :rules="customRules" :modelValue="loginFormData" label-position="top">
 				<uni-forms-item label="单位代码" required name="TenancyName">
-					<uni-easyinput prefixIcon="home-filled" v-model="loginFormData.TenancyName"
-						placeholder="请输入单位代码" />
+					<uni-easyinput prefixIcon="home-filled" v-model="loginFormData.TenancyName" placeholder="请输入单位代码" />
 				</uni-forms-item>
 				<uni-forms-item label="账号" required name="UsernameOrEmailAddress">
 					<uni-easyinput prefixIcon="person-filled" v-model="loginFormData.UsernameOrEmailAddress"
@@ -53,19 +52,27 @@
 					}
 
 				},
+				logoMarginTop: '0px'
 			}
 		},
 		onLoad(options) {
-			if(options.isShowToast){
+			if (options.isShowToast) {
 				uni.showToast({
-					icon:'none',
-					title:'登录超时\r\n请重新登录'
+					icon: 'none',
+					title: '登录超时\r\n请重新登录'
 				})
 			}
-			
+
 			this.loginFormData.TenancyName = uni.getStorageSync('tenancyName')
 			this.loginFormData.UsernameOrEmailAddress = uni.getStorageSync('usernameOrEmailAddress')
 			this.loginFormData.Password = uni.getStorageSync('password')
+
+			//获取菜单按钮（右上角胶囊按钮）的布局位置信息
+			var res = uni.getMenuButtonBoundingClientRect()
+			console.log(res)
+			
+			//根据菜单按钮设置Logo的Margin
+			this.logoMarginTop = res.top + res.height + 'px'
 		},
 		methods: {
 			submit(ref) {
@@ -73,23 +80,25 @@
 					//先清空相关缓存，再重新登录
 					uni.removeStorageSync('loginInfo')
 					uni.removeStorageSync('expireTime')
-					
+
 					this.$Api.login({
-						'TenancyName':'H' + this.loginFormData.TenancyName,
+						'TenancyName': 'H' + this.loginFormData.TenancyName,
 						'UsernameOrEmailAddress': this.loginFormData.UsernameOrEmailAddress,
 						'Password': this.loginFormData.Password
 					}).then((res) => {
 						console.log(res);
 						var dateTime = new Date()
-						if(res){
+						if (res) {
 							//缓存用户登录信息
 							uni.setStorageSync('tenancyName', this.loginFormData.TenancyName)
-							uni.setStorageSync('usernameOrEmailAddress', this.loginFormData.UsernameOrEmailAddress)
+							uni.setStorageSync('usernameOrEmailAddress', this.loginFormData
+								.UsernameOrEmailAddress)
 							uni.setStorageSync('password', this.loginFormData.Password)
 							//缓存登录返回值token、有效期等
 							uni.setStorageSync('loginInfo', res.result)
-							uni.setStorageSync('expireTime', dateTime.setSeconds(dateTime.getSeconds() + res.result.expireInSeconds))//设置token有效期
-							
+							uni.setStorageSync('expireTime', dateTime.setSeconds(dateTime.getSeconds() +
+								res.result.expireInSeconds)) //设置token有效期
+
 							//跳转首页
 							uni.redirectTo({
 								url: '/pages/index/index'
@@ -108,15 +117,26 @@
 	page {
 		height: 100%;
 		display: flex;
+
 		.content {
-			width: 600rpx;
-			margin: auto;
-			text-align: center;
-		
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			background: linear-gradient(0deg, #00ccff, #003366);
+
 			.logo {
 				width: 345rpx;
 				height: 58rpx;
-				margin-bottom: 80rpx;
+			}
+
+			.example {
+				width: 80%;
+				margin: auto;
+				box-shadow: 0 0 30rpx black;
+				padding: 40rpx;
+				border-radius: 30rpx;
+				background-color: white;
 			}
 		}
 	}

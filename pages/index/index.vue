@@ -7,8 +7,8 @@
 				<uni-grid-item v-for="(child, childIndex) in item.items" v-show="child.isShow" :index="childIndex"
 					:key="childIndex">
 					<view class="grid-item-box" style="background-color: #fff;" @click="childClick(child.pagePath)">
-						<image :src="(child.iconPath == '' ? '../../static/defaultIcon.png' : child.iconPath)" class="image"
-							mode="aspectFill" />
+						<image :src="(child.iconPath == '' ? '../../static/defaultIcon.png' : child.iconPath)"
+							class="image" mode="aspectFill" />
 						<text class="text">{{child.name}}</text>
 					</view>
 				</uni-grid-item>
@@ -71,6 +71,12 @@
 							pagePath: '/pages/keyCabinetStatus/keyCabinetStatus',
 							iconPath: '../../static/love.png',
 							isShow: false
+						}, {
+							winformDisplayName: '内胆分布统计',
+							name: '收满胆记录',
+							pagePath: '/pages/takeFullBoxRecord/takeFullBoxRecord',
+							iconPath: '../../static/love.png',
+							isShow: false
 						}]
 					},
 					{
@@ -126,9 +132,6 @@
 		methods: {
 			//根据用户权限加载功能模块
 			async loadFunction(callBack) {
-				//先清空功能列表，不然UI排版会有问题
-				this.functionList = []
-
 				var userInfo = await this.getUserInfos()
 				if (userInfo) {
 					var permissions = userInfo.permissions; //程序所有权限
@@ -174,7 +177,7 @@
 
 				//判断是否有回调函数
 				if (callBack)
-					callBack();
+					callBack()
 			},
 			//根据登录信息获取用户信息（组织机构、权限等）
 			async getUserInfos() {
@@ -196,6 +199,8 @@
 							}
 						}
 						res.result.currentUserOrganizationUnits = currentUserOrganizationUnits
+						res.result.currentUserOrganizationUnitIds = currentUserOrganizationUnits.length > 0 ?
+							currentUserOrganizationUnits.map((item) => item.id) : []
 
 						//缓存用户信息（组织机构、权限等）
 						uni.setStorageSync('userInfo', res.result)

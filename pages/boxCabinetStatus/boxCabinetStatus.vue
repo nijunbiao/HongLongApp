@@ -93,11 +93,13 @@
 				filterFormData: {
 					selectValue: undefined
 				},
+				//主控机下拉框数据
 				selectTerminalData: [],
-				terminalList: [],
 				boxLockerList: [],
 				//内胆柜轮播信息
 				swiperInfo: [],
+				//主控机-内胆柜信息
+				terminalList: [],
 				//底部信息
 				gatherInfo: [{
 						title: '单柜汇总',
@@ -220,10 +222,7 @@
 				var data = {}
 				var userInfo = uni.getStorageSync('userInfo')
 				if (userInfo) {
-					var ids = userInfo.currentUserOrganizationUnits.map((item) => item.id)
-					if (ids && ids.length > 0) {
-						data.OrganizationUnitIds = ids
-					}
+					data.OrganizationUnitIds = userInfo.currentUserOrganizationUnitIds
 				}
 
 				//统计内胆格状态
@@ -234,11 +233,7 @@
 
 				//获取主控柜信息
 				var terminalListRes = await this.$Api.GetControlTerminalListWithCabinet(data)
-				if(!terminalListRes){
-					return
-				}
-				
-				if (terminalListRes.result && terminalListRes.result.items.length > 0) {
+				if (terminalListRes && terminalListRes.result && terminalListRes.result.items.length > 0) {
 					//给主机柜下拉列表赋值
 					this.selectTerminalData = [{
 						value: '',
@@ -261,7 +256,7 @@
 					this.terminalList = terminalListRes.result.items
 
 					//获取内胆格子信息
-					data.TenantId = uni.getStorageSync('userInfo').tenantId
+					data.TenantId = userInfo.tenantId
 					var boxLockerListRes = await this.$Api.GetBoxLockerList(data)
 					if (boxLockerListRes.result && boxLockerListRes.result.items.length > 0) {
 						this.boxLockerList = boxLockerListRes.result.items
@@ -428,11 +423,13 @@
 			top: 0rpx;
 			z-index: 9999;
 
-			.openPopup::after, .refresh::after {
+			.openPopup::after,
+			.refresh::after {
 				border: none;
 			}
 
-			.openPopup, .refresh {
+			.openPopup,
+			.refresh {
 				display: inline-block;
 				width: 50%;
 				height: 70rpx;

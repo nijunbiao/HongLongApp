@@ -8,7 +8,6 @@
 				"enablePullDownRefresh": false,
 				"disableScroll": true
 			}
-
 		},
 		{
 			"path": "pages/index/index",
@@ -24,24 +23,29 @@
 				"enablePullDownRefresh": false,
 				"disableScroll": true
 			}
-		}, {
+		},
+		{
 			"path": "pages/keyCabinetStatus/keyCabinetStatus",
 			"style": {
 				"navigationBarTitleText": "钥匙柜状态",
 				"enablePullDownRefresh": false
 			}
-
+		},
+		{
+			"path": "pages/takeFullBoxRecord/takeFullBoxRecord",
+			"style": {
+				"navigationBarTitleText": "收满胆记录",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/test/test",
+			"style": {
+				"navigationBarTitleText": "测试页面",
+				"enablePullDownRefresh": false
+			}
 		}
-	    ,{
-            "path" : "pages/test/test",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "测试页面",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-    ],
+	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "",

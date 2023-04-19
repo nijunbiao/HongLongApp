@@ -65,5 +65,20 @@ export default {
 			method: 'GET',
 			data: data
 		})
+	},
+	//获取收银员收满胆记录
+	GetBoxDistributionDetail_InOutLockerBoxExtension(data, isShowLoading = false){
+		var defaultData = {
+			'DetailType': 'OutLockerFullBox'
+		}
+		
+		//后面相同的属性覆盖前一个，返回一个新对象
+		data = Object.assign(defaultData, data);
+		return request({
+			url: '/api/services/app/BoxStorage/GetBoxDistributionDetail_InOutLockerBoxExtension',
+			method: 'GET',
+			data: data,
+			isShowLoading: isShowLoading
+		})
 	}
 }

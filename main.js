@@ -1,5 +1,6 @@
 import App from './App'
 import Api from '@/common/api.js'
+import dayjs from 'dayjs'
 
 // #ifndef VUE3
 import Vue from 'vue'
@@ -8,6 +9,8 @@ App.mpType = 'app'
 
 //全局变量
 Vue.prototype.$Api = Api
+Vue.prototype.$dayjs = dayjs//处理时间和日期的js库
+Vue.prototype.$PageSize = 30//每页查询数据量
 Vue.prototype.$BoxLockerOffLineMinutes = 10//收银箱离线时间阈值
 Vue.prototype.$Monitor_AutoRefreshInterval = 15 * 1000//票箱监控自动刷新时间
 

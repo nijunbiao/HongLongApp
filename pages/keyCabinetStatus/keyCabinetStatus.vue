@@ -66,10 +66,7 @@
 				var data = {}
 				var userInfo = uni.getStorageSync('userInfo')
 				if (userInfo) {
-					var ids = userInfo.currentUserOrganizationUnits.map((item) => item.id)
-					if (ids && ids.length > 0) {
-						data.OrganizationUnitIds = ids
-					}
+					data.OrganizationUnitIds = userInfo.currentUserOrganizationUnitIds
 				}
 
 				//获取主控柜信息
@@ -78,13 +75,9 @@
 					this.terminalList = terminalListRes.result.items
 
 					//获取钥匙格子信息
-					data.TenantId = uni.getStorageSync('userInfo').tenantId
-					var keyLockerListRes = await this.$Api.GetKeyLockerList(data)
-					if(!keyLockerListRes){
-						return
-					}
-					
-					if (keyLockerListRes.result && keyLockerListRes.result.items.length > 0) {
+					data.TenantId = userInfo.tenantId
+					var keyLockerListRes = await this.$Api.GetKeyLockerList(data)					
+					if (keyLockerListRes && keyLockerListRes.result && keyLockerListRes.result.items.length > 0) {
 						this.keyLockerList = keyLockerListRes.result.items
 
 						//数据处理与整合
