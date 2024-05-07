@@ -125,13 +125,13 @@
 		onLoad() {
 			uni.setNavigationBarColor({
 				frontColor: '#ffffff',
-				backgroundColor: '#000000'
+				backgroundColor: '#003366'
 			})
 
 			this.getBoxCabinetStatus()
 			// this.interval = setInterval(() => {
 			// 	this.getBoxCabinetStatus()
-			// }, this.$Monitor_AutoRefreshInterval);
+			// }, this.$global.Monitor_AutoRefreshInterval);
 		},
 		onShow() {
 
@@ -295,8 +295,7 @@
 										var actionTime = Date.parse(box.actionTime)
 										box.page_IsTimeOut = ((dateNow - actionTime) / 1000 /
 												60) >
-											this
-											.$BoxLockerOffLineMinutes
+											this.$Global.BoxLockerOffLineMinutes
 
 										var page_BoxStatus = box.boxStatus
 										var page_BackgroundColor = '#C0C0C0'
@@ -329,7 +328,7 @@
 										box.page_BackgroundColor = page_BackgroundColor
 									})
 								} else {
-									for (var i = 1; i <= 18; i++) {
+									for (var i = 1; i <= this.$Global.CabinetNum; i++) {
 										boxCabinet.boxLockerList.push({
 											'page_BackgroundColor': '#B9D1EA',
 											'boxLockerNo': i,
@@ -418,7 +417,7 @@
 		}
 
 		.filter {
-			height: 5%;
+			height: 70rpx;
 			position: sticky;
 			top: 0rpx;
 			z-index: 9999;
@@ -432,7 +431,7 @@
 			.refresh {
 				display: inline-block;
 				width: 50%;
-				height: 70rpx;
+				height: inherit;
 				font-size: 30rpx;
 				box-shadow: 20rpx 20rpx 30rpx #cccccc;
 			}
@@ -462,17 +461,21 @@
 		}
 
 		.uni-margin-wrap {
-			height: calc(100% - 5% - 10%);
+			height: calc(100% - 70rpx - 10%);
 
 			.swiper-box {
 				height: 100%;
+				
+				swiper-item{
+					display: flex;
+					align-items: center;
+				}
 
 				.boxCabinet {
 					width: 375rpx;
-					margin: 6% auto;
+					margin: auto;
 					text-align: center;
 					display: table;
-					margin-bottom: 50rpx;
 					border: 2rpx solid #cccccc;
 					border-radius: 20rpx;
 					box-shadow: 20rpx 20rpx 30rpx #cccccc;

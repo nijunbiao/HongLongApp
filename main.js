@@ -1,18 +1,23 @@
 import App from './App'
-import Api from '@/common/api.js'
 import dayjs from 'dayjs'
+import WXApi from '@/common/wxApi.js'
+import Api from '@/common/api.js'
+import Global from '@/common/global.js'
+import MyShare from '@/common/myShare.js'
 
 // #ifndef VUE3
 import Vue from 'vue'
 Vue.config.productionTip = false
 App.mpType = 'app'
 
+//混入'我的分享'
+Vue.mixin(MyShare)
+
 //全局变量
 Vue.prototype.$Api = Api
-Vue.prototype.$dayjs = dayjs//处理时间和日期的js库
-Vue.prototype.$PageSize = 30//每页查询数据量
-Vue.prototype.$BoxLockerOffLineMinutes = 10//收银箱离线时间阈值
-Vue.prototype.$Monitor_AutoRefreshInterval = 15 * 1000//票箱监控自动刷新时间
+Vue.prototype.$WXApi = WXApi
+Vue.prototype.$dayjs = dayjs	//处理时间和日期的js库
+Vue.prototype.$Global = Global	//全局变量集合
 
 try {
   function isPromise(obj) {

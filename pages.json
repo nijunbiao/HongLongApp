@@ -1,6 +1,15 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "功能中心",
+				"enablePullDownRefresh": true,
+				"backgroundColor": "#003366",
+				"backgroundTextStyle": "light"
+			}
+		},
+		{
 			"path": "pages/login/login",
 			"style": {
 				"navigationStyle": "custom",
@@ -10,16 +19,9 @@
 			}
 		},
 		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "功能中心",
-				"enablePullDownRefresh": true
-			}
-		},
-		{
 			"path": "pages/boxCabinetStatus/boxCabinetStatus",
 			"style": {
-				"navigationBarTitleText": "收银柜状态",
+				"navigationBarTitleText": "内胆柜状态",
 				"enablePullDownRefresh": false,
 				"disableScroll": true
 			}
@@ -44,8 +46,145 @@
 				"navigationBarTitleText": "测试页面",
 				"enablePullDownRefresh": false
 			}
+		}, {
+			"path": "pages/register/register",
+			"style": {
+				"navigationBarTitleText": "人员注册",
+				"backgroundColor": "#003366",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/staffCertification/staffCertification",
+			"style": {
+				"navigationBarTitleText": "人员认证",
+				"enablePullDownRefresh": false,
+				"disableScroll": true
+			}
+
+		}, {
+			"path": "pages/equipmentRepairRecord/equipmentRepairRecord",
+			"style": {
+				"navigationBarTitleText": "设备报修",
+				"enablePullDownRefresh": false,
+				"disableScroll": true
+			}
+		},
+		{
+			"path": "pages/cashCabinet/index",
+			"style": {
+				"navigationBarTitleText": "收银柜信息",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/cashCabinet/controlTerminal/controlTerminal",
+			"style": {
+				"navigationBarTitleText": "主控柜信息",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/cashCabinet/cabinet/cabinet",
+			"style": {
+				"navigationBarTitleText": "内胆柜信息",
+				"enablePullDownRefresh": false,
+				"disableScroll": true
+			}
+		},
+		{
+			"path": "pages/route/route",
+			"style": {
+				"navigationBarTitleText": "线路维护",
+				"enablePullDownRefresh": false,
+				"disableScroll": true
+			}
+		},
+		{
+            "path" : "pages/vehicle/vehicle",
+            "style" : {
+                "navigationBarTitleText": "车辆维护",
+                "enablePullDownRefresh": false,
+				"disableScroll": true
+            }
+            
+        },
+        {
+        	"path" : "pages/box/box",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "内胆维护",
+        		"enablePullDownRefresh" : false,
+				"disableScroll": true
+        	}
+        },
+        {
+        	"path" : "pages/shell/shell",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "票箱维护",
+        		"enablePullDownRefresh" : false,
+				"disableScroll": true
+        	}
+        },
+        {
+        	"path" : "pages/bluetoothControl/index",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "蓝牙搜索",
+        		"enablePullDownRefresh" : false,
+				"disableScroll": true
+        	}
+        },
+        {
+        	"path" : "pages/bluetoothControl/communication/communication",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "蓝牙控制",
+        		"enablePullDownRefresh" : false
+        	}
+        },
+        {
+        	"path" : "pages/selfServicePayment/selfServicePayment",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "自助交账",
+        		"enablePullDownRefresh" : false
+        	}
+        },
+        {
+        	"path" : "pages/selfServicePayment_jinhua/selfServicePayment_jinhua",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "自助交账_金华版",
+        		"enablePullDownRefresh" : false
+        	}
+        }
+    ],
+/* 	"subPackages": [{
+			"root": "CashCabinet",
+			"pages": [{
+				"path": "pages/cashCabinet/controlTerminal"
+			}, {
+				"path": "pages/cashCabinet/cabinet"
+			}]
+		},
+		{
+			"root": "TakeFullBoxRecord",
+			"pages": [{
+				"path": "pages/takeFullBoxRecord"
+			}]
 		}
 	],
+	"preloadRule": {
+		"pages/login/login": {
+			"network": "all",
+			"packages": ["__APP__"]
+		},
+		"pages/cashCabinet/index": {
+			"network": "all",
+			"packages": ["CashCabinet"]
+		}
+	}, */
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "",

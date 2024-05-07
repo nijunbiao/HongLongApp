@@ -38,7 +38,7 @@
 		onLoad() {
 			uni.setNavigationBarColor({
 				frontColor: '#ffffff',
-				backgroundColor: '#000000'
+				backgroundColor: '#003366'
 			})
 
 			this.getKeyCabinetStatus()
@@ -101,8 +101,7 @@
 									var actionTime = Date.parse(key.actionTime)
 									key.page_IsTimeOut = ((dateNow - actionTime) / 1000 /
 											60) >
-										this
-										.$BoxLockerOffLineMinutes
+										this.$Global.BoxLockerOffLineMinutes
 
 									var page_KeyStatus = key.keyStatus
 									var page_BackgroundColor = '#C0C0C0'
@@ -125,7 +124,7 @@
 									key.page_BackgroundColor = page_BackgroundColor
 								})
 							} else {
-								for (var i = 1; i <= 16; i++) {
+								for (var i = 1; i <= this.$Global.LockerNum; i++) {
 									terminal.keyLockerList.push({
 										'page_BackgroundColor': '#B9D1EA',
 										'keyLockerNo': i,

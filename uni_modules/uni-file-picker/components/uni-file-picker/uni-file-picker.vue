@@ -189,7 +189,19 @@
 			sourceType: {
 				type: Array,
 				default () {
-					return  ['album', 'camera']
+					return ['album', 'camera']
+				}
+			},
+			maxB: {
+				type: Number,
+				default () {
+					return 0
+				}
+			},
+			minB: {
+				type: Number,
+				default () {
+					return 0
 				}
 			}
 		},
@@ -290,19 +302,19 @@
 				return this.uploadFiles(files)
 			},
 			async setValue(newVal, oldVal) {
-				const newData =  async (v) => {
+				const newData = async (v) => {
 					const reg = /cloud:\/\/([\w.]+\/?)\S*/
 					let url = ''
-					if(v.fileID){
+					if (v.fileID) {
 						url = v.fileID
-					}else{
+					} else {
 						url = v.url
 					}
 					if (reg.test(url)) {
 						v.fileID = url
 						v.url = await this.getTempFileURL(url)
 					}
-					if(v.url) v.path = v.url
+					if (v.url) v.path = v.url
 					return v
 				}
 				if (this.returnType === 'object') {
@@ -313,13 +325,13 @@
 					}
 				} else {
 					if (!newVal) newVal = []
-					for(let i =0 ;i < newVal.length ;i++){
+					for (let i = 0; i < newVal.length; i++) {
 						let v = newVal[i]
 						await newData(v)
 					}
 				}
 				this.localValue = newVal
-				if (this.form && this.formItem &&!this.is_reset) {
+				if (this.form && this.formItem && !this.is_reset) {
 					this.is_reset = false
 					this.formItem.setValue(this.localValue)
 				}
@@ -366,6 +378,9 @@
 					})
 					.then(result => {
 						this.setSuccessAndError(result.tempFiles)
+						this.$nextTick(() => {
+							this.setEmit()
+						})
 					})
 					.catch(err => {
 						console.log('选择失败', err)
@@ -399,6 +414,21 @@
 				let currentData = []
 				for (let i = 0; i < files.length; i++) {
 					if (this.limitLength - this.files.length <= 0) break
+					
+					//console.log('文件大小', files[i].size)
+
+					// 限制大小
+					if (this.maxB > 0 && this.minB > 0) {
+						if (files[i].size > this.maxB || files[i].size < this.minB) {
+							uni.showToast({
+								title: '图片大小需在' + this.minB + 'K~' + this.maxB + 'K之间，已移除不符合图片',
+								icon: "none"
+							});
+
+							continue
+						}
+					}
+
 					files[i].uuid = Date.now()
 					let filedata = await get_file_data(files[i], this.fileMediatype)
 					filedata.progress = 0
@@ -411,7 +441,7 @@
 				}
 				this.$emit('select', {
 					tempFiles: currentData,
-					tempFilePaths: filePaths
+					tempFilePaths: currentData.map((c) => c.path)
 				})
 				res.tempFiles = files
 				// 停止自动上传
@@ -464,7 +494,7 @@
 						const reg = /cloud:\/\/([\w.]+\/?)\S*/
 						if (reg.test(item.url)) {
 							this.files[index].url = await this.getTempFileURL(item.url)
-						}else{
+						} else {
 							this.files[index].url = item.url
 						}
 
@@ -552,7 +582,7 @@
 				let data = []
 				if (this.returnType === 'object') {
 					data = this.backObject(this.files)[0]
-					this.localValue = data?data:null
+					this.localValue = data ? data : null
 				} else {
 					data = this.backObject(this.files)
 					if (!this.localValue) {
@@ -582,8 +612,12 @@
 						name: v.name,
 						path: v.path,
 						size: v.size,
-						fileID:v.fileID,
-						url: v.url
+						fileID: v.fileID,
+						url: v.url,
+						// 修改删除一个文件后不能再上传的bug, #694
+						uuid: v.uuid,
+						status: v.status,
+						cloudPath: v.cloudPath
 					})
 				})
 				return newFilesData
