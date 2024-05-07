@@ -16,14 +16,15 @@
 			<view class="vehicleInfo">
 				<uni-section title="车辆信息" type="line" titleFontSize="18px"></uni-section>
 
-				<view v-for="(item, index) in vehicleList" :key="index" class="vehicleItem">
-<!-- 					<text>线路：</text>
+				<view v-for="(item, index) in inputVehicleList" :key="index" class="vehicleItem">
+					<!-- 					<text>线路：</text>
 					<uni-data-select v-model="item.RouteId" :localdata="routeData"
 						@change="routeChange"></uni-data-select> -->
-					<text>{{ '车辆：' + (phoneNum.length > 0 ? '（' + phoneNum + '）' : '') }}</text>
+					<text>{{ '车辆：' + (item.RouteVehicleInfo != null ? '（' + item.RouteVehicleInfo.RouteName + '）' : '') }}</text>
 					<!-- <uni-easyinput maxlength="10" v-model="item.VehicleCode" placeholder="请输入车号"></uni-easyinput> -->
 					<!-- <uni-easyinput maxlength="1" v-model="item.Times" placeholder="请输入趟数"></uni-easyinput> -->
-					<uni-combox :candidates="vehicleData" placeholder="请选择所属车辆" @input="vehicleInput(index)"></uni-combox>
+					<uni-combox :candidates="vehicleData" placeholder="请选择所属车辆"
+						@input="vehicleInput(index, $event)"></uni-combox>
 					<text>金额：</text>
 					<uni-row>
 						<uni-col :span="16">
@@ -41,11 +42,12 @@
 					<text v-if="item.ScanInfo.BoxId.length > 0"
 						class="shellInfo">{{'内胆ID：' + item.ScanInfo.BoxId + '；纸币：' + item.ScanInfo.Paper + '；硬币：' + item.ScanInfo.Coin }}</text>
 
-					<button type="default" class="delVehicle" v-show="vehicleList.length > vehicleMinCount"
+					<button type="default" class="delVehicle" v-show="inputVehicleList.length > vehicleMinCount"
 						@click="delVehicle(index)">-删除车辆</button>
 				</view>
 
-				<text class="addVehicle" v-show="vehicleList.length < vehicleMaxCount" @click="addVehicle">+添加车辆</text>
+				<text class="addVehicle" v-show="inputVehicleList.length < vehicleMaxCount"
+					@click="addVehicle">+添加车辆</text>
 			</view>
 			<!-- 图片、备注 -->
 			<view class="other">
@@ -78,8 +80,9 @@
 		data() {
 			return {
 				haveScene: false,
-				isNeedPhoneNum: false,
-				phoneNum: '15618693587',
+				isNeedPhoneNum: true,
+				phoneNum: '',
+				userInfo: null,
 				vehicleMinCount: 1,
 				vehicleMaxCount: 3,
 				photoMaxB: this.$Global.StaffRegister_ImageMaxB,
@@ -90,11 +93,8 @@
 					StaffId: '',
 					CompanyName: ''
 				},
-				vehicleList: [{
-					Route: null,
-					RouteId: '',
-					Vehicle: null,
-					VehicleId: '',
+				inputVehicleList: [{
+					RouteVehicleInfo: null,
 					Total: '',
 					ScanInfo: {
 						BoxId: '',
@@ -102,8 +102,6 @@
 						Coin: 0
 					}
 				}],
-				//routeList: [],
-				//routeData: [],
 				vehicleList: [],
 				vehicleData: [],
 				remarkMaxLength: 100,
@@ -126,31 +124,20 @@
 				this.haveScene = true
 			}
 
-			this.load()
+			//this.load()
 		},
 		methods: {
 			load() {
 				var that = this
 				that.vehicleData = []
-
-				that.basicInfo.ReportDate = StrToDate(Date.now(), 'YYYY-MM-DD')
 				
-				// that.$Api.Route_GetPaged().then((res) => {
-				// 	console.log(res.result.items)
-				// 	that.routeList = res.result.items//.filter(item => item.tenantId)
-
-				// 	that.routeList.forEach(item => {
-				// 		// that.routeData.push({
-				// 		// 	'text': item.routeName,
-				// 		// 	'value': item.id
-				// 		// })
-				// 	})
-				// })
-				
-				that.$Api.Vehicle_GetPaged().then((res) => {
+				var data = {
+					'TenantId': that.userInfo.tenantId
+				}
+				that.$Api.Vehicle_GetPaged(data).then((res) => {
 					console.log(res.result.items)
-					that.vehicleList = res.result.items//.filter(item => item.tenantId)
-				
+					that.vehicleList = res.result.items//.filter(item => item.tenantId == 1012)
+
 					that.vehicleList.forEach(item => {
 						this.vehicleData.push(item.vehicleCode)
 					})
@@ -175,11 +162,21 @@
 							var phoneNum = numberRes.result.phone_info.purePhoneNumber
 
 							//根据手机号查询用户信息
-							var result = that.getBaseStaffInfoForApp(phoneNum)
-							if (result && result.success == true) {
+							var res = await that.getBaseStaffInfoForApp(phoneNum)
+							console.log('拿到用户信息结果', res)
+							if (res && res.success == true) {
+								that.userInfo = res.result
+								
+								that.basicInfo.ReportDate = StrToDate(Date.now(), 'YYYY-MM-DD')
+								that.basicInfo.StaffName = that.userInfo.staffName
+								that.basicInfo.StaffId = that.userInfo.staffCardID
+								that.basicInfo.CompanyName = that.userInfo.staffOrganizationUnit
+								
 								that.isNeedPhoneNum = false
-
+								
 								that.phoneNum = phoneNum
+								
+								that.load()
 							}
 						} else {
 							uni.showToast({
@@ -202,29 +199,33 @@
 				console.log('接口请求参数', data)
 
 				var result = await that.$Api.Staff_GetBaseStaffInfoForApp(data)
+				
+				console.log('获取用户信息', result)
+				
 				return result
 			},
-			vehicleInput(e, index) {
-				console.log(e, index)
-			
+			vehicleInput(index, e) {
+				console.log(index, e)
+
 				if (e) {
-					var vehicle = this.vehicleList.filter(item => item.vehicleCode == e)
-					console.log('线路信息：' + vehicle)
-					if (vehicle && vehicle.length > 0) {
-			// 			this.routeName = vehicle[0].routeName
-			// 			this.shellFormData.Vehicle = vehicle[0].id
-			// 			this.shellFormData.Route = vehicle[0].baseRouteId
-			
-			// 			return
+					var routeVehicleInfo = this.vehicleList.filter(item => item.vehicleCode == e)
+					console.log('线路车辆信息：', routeVehicleInfo)
+					if (routeVehicleInfo && routeVehicleInfo.length > 0) {
+						this.inputVehicleList[index].RouteVehicleInfo = {
+							'VehicleId': routeVehicleInfo[0].id,
+							"VehicleCode": routeVehicleInfo[0].vehicleCode,
+							"RouteId": routeVehicleInfo[0].baseRouteId,
+							"RouteName": routeVehicleInfo[0].routeName,
+						}
+						
+						return
 					}
 				}
-			
-				// this.routeName = ''
-				// this.shellFormData.Vehicle = null
-				// this.shellFormData.Route = null
+				
+				this.inputVehicleList[index].RouteVehicleInfo = null
 			},
 			boxTotalInput(index) {
-				this.vehicleList[index].ScanInfo = {
+				this.inputVehicleList[index].ScanInfo = {
 					BoxId: '',
 					Paper: 0,
 					Coin: 0
@@ -235,8 +236,8 @@
 			//计算总金额
 			calcTotal() {
 				var total = 0.0
-				for (var i = 0; i < this.vehicleList.length; i++) {
-					total += this.vehicleList[i].Total
+				for (var i = 0; i < this.inputVehicleList.length; i++) {
+					total += this.inputVehicleList[i].Total
 				}
 
 				this.Total = total * 1
@@ -259,18 +260,18 @@
 
 							if (paramArray) {
 								console.log(isNaN(paramArray))
-								
+
 								//把角转成元
 								var paper = paramArray[1] * 0.1
 								var Coin = paramArray[2] * 0.1
-								
+
 								//显示二维码内的内胆ID、纸币金额、硬币金额
-								that.vehicleList[index].ScanInfo.BoxId = paramArray[0]
-								that.vehicleList[index].ScanInfo.Paper = paper
-								that.vehicleList[index].ScanInfo.Coin = Coin
-								
+								that.inputVehicleList[index].ScanInfo.BoxId = paramArray[0]
+								that.inputVehicleList[index].ScanInfo.Paper = paper
+								that.inputVehicleList[index].ScanInfo.Coin = Coin
+
 								//计算内胆总金额
-								that.vehicleList[index].Total = paper + Coin
+								that.inputVehicleList[index].Total = paper + Coin
 
 								that.calcTotal()
 							}
@@ -286,15 +287,14 @@
 				})
 			},
 			addVehicle() {
-				if (this.vehicleList.length >= 3) {
+				if (this.inputVehicleList.length >= 3) {
 					uni.showToast({
 						icon: 'none',
 						title: '最多只能有三个车辆信息'
 					})
 				} else {
-					this.vehicleList.push({
-						RouteId: '',
-						VehicleCode: '',
+					this.inputVehicleList.push({
+						RouteVehicleInfo: null,
 						Total: '',
 						ScanInfo: {
 							BoxId: '',
@@ -305,13 +305,13 @@
 				}
 			},
 			delVehicle(index) {
-				if (this.vehicleList.length <= 1) {
+				if (this.inputVehicleList.length <= 1) {
 					uni.showToast({
 						icon: 'none',
 						title: '至少有一个车辆信息'
 					})
 				} else {
-					this.vehicleList.splice(index, 1)
+					this.inputVehicleList.splice(index, 1)
 				}
 			},
 			//选择照片
@@ -326,16 +326,16 @@
 				var that = this
 				var signOutTIme = StrToDate(Date.now())
 				var ssCashierDetails = []
-				for (var i = 0; i < that.vehicleList.length; i++) {
+				for (var i = 0; i < that.inputVehicleList.length; i++) {
 					var d = {
-						"baseVehicleId": that.vehicleList[i].VehicleCode,
-						"vehicleCode": that.vehicleList[i].VehicleCode,
-						"baseRouteId": that.vehicleList[i].RouteId,
-						"routeName": that.vehicleList[i].RouteId,
-						"boxID": that.vehicleList[i].ScanInfo.BoxId,
-						"paperAmount": that.vehicleList[i].ScanInfo.Paper,
-						"coinAmount": that.vehicleList[i].ScanInfo.Coin,
-						"totalAmount": that.vehicleList[i].Total
+						"baseVehicleId": that.inputVehicleList[i].RouteVehicleInfo.VehicleId,
+						"vehicleCode": that.inputVehicleList[i].RouteVehicleInfo.VehicleCode,
+						"baseRouteId": that.inputVehicleList[i].RouteVehicleInfo.RouteId,
+						"routeName": that.inputVehicleList[i].RouteVehicleInfo.RouteName,
+						"boxID": that.inputVehicleList[i].ScanInfo.BoxId,
+						"paperAmount": that.inputVehicleList[i].ScanInfo.Paper,
+						"coinAmount": that.inputVehicleList[i].ScanInfo.Coin,
+						"totalAmount": that.inputVehicleList[i].Total
 					}
 
 					ssCashierDetails.push(d)
@@ -398,6 +398,10 @@
 
 	.vehicleInfo {
 		/deep/.uni-stat__select {
+			margin: 20rpx 0rpx;
+		}
+		
+		/deep/.uni-combox{
 			margin: 20rpx 0rpx;
 		}
 
